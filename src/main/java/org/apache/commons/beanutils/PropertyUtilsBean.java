@@ -118,6 +118,9 @@ public class PropertyUtilsBean {
 
     /** An empty object array */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    
+    /** A sentinel object to represent a cached missing descriptor */
+    private static final Object MISS_SENTINEL = new Object();
 
     /** Log instance */
     private final Log log = LogFactory.getLog(PropertyUtils.class);
@@ -960,8 +963,8 @@ public class PropertyUtilsBean {
             mappedDescriptors.setFast(true);
             mappedDescriptorsCache.put(bean.getClass(), mappedDescriptors);
         }
-        result = (PropertyDescriptor) mappedDescriptors.get(name);
-        if (result == null) {
+        Object cachedMappedDescriptor = mappedDescriptors.get(name);
+        if (cachedMappedDescriptor == null) {
             // not found, try to create it
             try {
                 result = new MappedPropertyDescriptor(name, bean.getClass());
@@ -972,11 +975,15 @@ public class PropertyUtilsBean {
             }
             if (result != null) {
                 mappedDescriptors.put(name, result);
+            } else {
+                mappedDescriptors.put(name, MISS_SENTINEL);
             }
+            return result;
+        } else if (cachedMappedDescriptor == MISS_SENTINEL) {
+            return null;
+        } else {
+            return (PropertyDescriptor) cachedMappedDescriptor;
         }
-
-        return result;
-
     }
 
 
