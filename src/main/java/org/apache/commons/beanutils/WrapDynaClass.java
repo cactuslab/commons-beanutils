@@ -480,14 +480,18 @@ public class WrapDynaClass implements DynaClass {
         final Iterator<?> names = mappeds.keySet().iterator();
         while (names.hasNext()) {
             final String name = (String) names.next();
-            final PropertyDescriptor descriptor =
-                    (PropertyDescriptor) mappeds.get(name);
-            properties[j] =
-                    new DynaProperty(descriptor.getName(),
-                            Map.class);
-            propertiesMap.put(properties[j].getName(),
-                    properties[j]);
-            j++;
+            final Object mappedObject = mappeds.get(name);
+            /* The mappedPropertyDescriptors cache contains a sentinel to cache misses */
+            if (mappedObject != PropertyUtilsBean.MISS_SENTINEL) {
+                final PropertyDescriptor descriptor =
+                        (PropertyDescriptor) mappedObject;
+                properties[j] =
+                        new DynaProperty(descriptor.getName(),
+                                Map.class);
+                propertiesMap.put(properties[j].getName(),
+                        properties[j]);
+                j++;
+            }
         }
 
     }

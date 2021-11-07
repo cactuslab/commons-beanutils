@@ -120,7 +120,7 @@ public class PropertyUtilsBean {
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
     /** A sentinel object to represent a cached missing descriptor */
-    private static final Object MISS_SENTINEL = new Object();
+    static final Object MISS_SENTINEL = new Object();
 
     /** Log instance */
     private final Log log = LogFactory.getLog(PropertyUtils.class);
